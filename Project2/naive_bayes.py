@@ -140,7 +140,7 @@ class NaiveBayes():
             to avoid writing the same code for self.word_counts_spam and
             self.word_counts_ham!
             """
-
+            ## loop populates dictionary with number of spam or ham emails the word appears in
             for file in filenames:
                 wordSet = self.word_set(file)
                 for word in wordSet:
@@ -149,6 +149,7 @@ class NaiveBayes():
                     else:
                         d[word] = 1
 
+        ## returns correct values
         self.num_train_hams = len(train_hams)
         self.num_train_spams = len(train_spams)
         get_counts(train_spams, self.word_counts_spam)
@@ -182,24 +183,32 @@ class NaiveBayes():
         Access those variables with a 'self' prefix, like self.num_train_hams.
         """
 
+        ## creates word set of the email
         wordSet = self.word_set(filename)
 
+        # initializes the probabilities of the words appearing in a spam or ham email
         probWordsGivenSpam = 0
         probWordsGivenHam = 0
 
+
+        ## calculates probabilities of spam and ham
         probSpam = np.log((self.num_train_spams / (self.num_train_spams + self.num_train_hams)))
         probHam = np.log((self.num_train_hams / (self.num_train_spams + self.num_train_hams)))
 
+        ## this loop calculates probability the words appear in a spam email
         for word in wordSet:
             probAB = np.log(((self.word_counts_spam.get(word, 0) + 1) / (self.num_train_spams + 2)))
             probWordsGivenSpam += probAB
 
+        ## this loop calculates probability the words appear in a ham email
         for word in wordSet:
             probCD = np.log(((self.word_counts_ham.get(word, 0) + 1) / (self.num_train_hams + 2)))
             probWordsGivenHam += probCD
 
         ## P(spam|words) + P(ham|words) should equal 1
 
+
+        ## returns correct value
         if (probSpam + probWordsGivenSpam) > (probHam + probWordsGivenHam):
             return self.SPAM_LABEL
         else:
